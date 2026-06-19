@@ -29,7 +29,7 @@ const SHOPIFY_WEBHOOK_SECRET = process.env.SHOPIFY_WEBHOOK_SECRET;
 const KLAVIYO_PRIVATE_API_KEY = process.env.KLAVIYO_PRIVATE_API_KEY;
 const EXTERNAL_WEBHOOK_SECRET = process.env.EXTERNAL_WEBHOOK_SECRET;
 const TEXAS_LOCATION_ID = process.env.TEXAS_LOCATION_ID;
-const JJ_POLAND_LOCATION_ID = process.env.JJ_POLAND_LOCATION_ID;
+const JJ_NETHERLANDS_LOCATION_ID = process.env.JJ_NETHERLANDS_LOCATION_ID;
 const JJ_UK_LOCATION_ID = process.env.JJ_UK_LOCATION_ID;
 const SHOPIFY_API_KEY = process.env.SHOPIFY_API_KEY;
 const SHOPIFY_API_SECRET = process.env.SHOPIFY_API_SECRET;
@@ -277,7 +277,7 @@ async function processRestock(variantGid, warehouse) {
 function locationIdToWarehouse(locationId) {
   const id = String(locationId);
   if (id === String(TEXAS_LOCATION_ID)) return 'US';
-  if (id === String(JJ_POLAND_LOCATION_ID)) return 'PL';
+  if (id === String(JJ_NETHERLANDS_LOCATION_ID)) return 'NL';
   if (id === String(JJ_UK_LOCATION_ID)) return 'UK';
   return null;
 }
