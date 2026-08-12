@@ -38,10 +38,12 @@ const SHOPIFY_API_SECRET = process.env.SHOPIFY_API_SECRET;
 // ── Region Normalizer ─────────────────────────────────────────────────────────
 function normalizeRegion(region) {
   const r = (region || '').trim().toUpperCase();
-  if (r === 'NL') return 'NL';
   if (r === 'UK' || r === 'GB') return 'UK';
-  return 'ROW'; // EU, US, USA, ROW, empty, unknown → all become ROW
+  if (['EU','NL','DE','FR','IT','ES','BE','AT','PL','SE','DK','FI','PT',
+       'IE','CZ','RO','HU','SK','BG','HR','SI','EE','LV','LT','LU','MT','CY','GR'].includes(r)) return 'EU';
+  return 'ROW';
 }
+
 
 // ── OAuth Token Manager ───────────────────────────────────────────────────────
 // Automatically fetches and caches access token using Client ID + Secret
@@ -392,11 +394,8 @@ app.post('/storefront/subscribe', async (req, res) => {
   }
 
   // Map region to warehouse code
- const WAREHOUSE_MAP = {
-  NL:  'NL',
-  UK:  'UK',
-  ROW: 'US',
-};
+ const WAREHOUSE_MAP = { EU: 'NL', UK: 'UK', ROW: 'US' };
+
 
   const normalizedRegion = normalizeRegion(region);
 const warehouse = WAREHOUSE_MAP[normalizedRegion] || 'US';
