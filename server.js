@@ -358,8 +358,8 @@ app.post('/trigger-manual', async (req, res) => {
   const { warehouse, variant_id } = req.body;
   if (!warehouse || !variant_id)
     return res.status(400).json({ error: 'Missing: warehouse, variant_id' });
-  if (!['US', 'PL', 'UK'].includes(warehouse))
-    return res.status(400).json({ error: 'warehouse must be "US", "PL", or "UK"' });
+  if (!['US', 'NL', 'UK'].includes(warehouse))
+     return res.status(400).json({ error: 'warehouse must be "US", "NL", or "UK"' });
 
   const variantGid = variant_id.startsWith('gid://')
     ? variant_id
@@ -383,12 +383,12 @@ app.post('/storefront/subscribe', async (req, res) => {
   }
 
   // Map region to warehouse code
-  const WAREHOUSE_MAP = {
-    US: process.env.WAREHOUSE_CODE_US || 'US',
-    EU: process.env.WAREHOUSE_CODE_EU || 'PL',
-    ROW: process.env.WAREHOUSE_CODE_ROW || 'UK',
-  };
-  const warehouse = WAREHOUSE_MAP[region] || WAREHOUSE_MAP.ROW;
+ const WAREHOUSE_MAP = {
+  NL:  'NL',
+  UK:  'UK',
+  ROW: 'US',
+};
+  const warehouse = WAREHOUSE_MAP[region] || 'US';
 
   const variantGid = variant_id.startsWith('gid://')
     ? variant_id
