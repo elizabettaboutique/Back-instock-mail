@@ -34,6 +34,15 @@ const JJ_UK_LOCATION_ID = process.env.NORSK_UK_LOCATION_ID;
 const SHOPIFY_API_KEY = process.env.SHOPIFY_API_KEY;
 const SHOPIFY_API_SECRET = process.env.SHOPIFY_API_SECRET;
 
+
+// ── Region Normalizer ─────────────────────────────────────────────────────────
+function normalizeRegion(region) {
+  const r = (region || '').trim().toUpperCase();
+  if (r === 'NL') return 'NL';
+  if (r === 'UK' || r === 'GB') return 'UK';
+  return 'ROW'; // EU, US, USA, ROW, empty, unknown → all become ROW
+}
+
 // ── OAuth Token Manager ───────────────────────────────────────────────────────
 // Automatically fetches and caches access token using Client ID + Secret
 // Never expires — refreshes itself if it ever gets a 401
@@ -336,8 +345,8 @@ app.post('/webhooks/external-restock', async (req, res) => {
   const { warehouse, variant_id, quantity } = req.body;
   if (!warehouse || !variant_id)
     return res.status(400).json({ error: 'Missing: warehouse, variant_id' });
-  if (!['PL', 'UK'].includes(warehouse))
-    return res.status(400).json({ error: 'warehouse must be "PL" or "UK"' });
+  if (!['NL', 'UK', 'US'].includes(warehouse))
+      return res.status(400).json({ error: 'warehouse must be "NL", "UK", or "US"' });
   if (quantity !== undefined && quantity <= 0)
     return res.status(200).json({ message: 'Skipped: quantity not positive' });
 
@@ -388,7 +397,10 @@ app.post('/storefront/subscribe', async (req, res) => {
   UK:  'UK',
   ROW: 'US',
 };
-  const warehouse = WAREHOUSE_MAP[region] || 'US';
+
+  const normalizedRegion = normalizeRegion(region);
+const warehouse = WAREHOUSE_MAP[normalizedRegion] || 'US';
+  
 
   const variantGid = variant_id.startsWith('gid://')
     ? variant_id
@@ -446,7 +458,7 @@ app.post('/storefront/subscribe', async (req, res) => {
           { key: 'variant_id',     value: variantGid },
           { key: 'product_title', value: product_title || '' },
           { key: 'variant_title', value: variant_title || '' },
-          { key: 'region',         value: region },
+          { key: 'region', value: normalizedRegion },
           { key: 'warehouse',      value: warehouse },
           { key: 'subscribed_at',  value: now },
           { key: 'notified',       value: 'false' },
